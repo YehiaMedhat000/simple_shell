@@ -25,7 +25,7 @@ int qdelim(char chr, char *d)
 {
 	while (*d)
 	{
-		if (*d++ == c)
+		if (*d++ == chr)
 			return (1);
 	}
 	return (0);
@@ -40,7 +40,7 @@ int qdelim(char chr, char *d)
 
 int qalpha(int chr)
 {
-	if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'))
+	if ((chr >= 'a' && chr <= 'z') || (chr >= 'A' && chr <= 'Z'))
 		return (1);
 	return (0);
 }

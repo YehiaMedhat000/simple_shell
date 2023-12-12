@@ -99,7 +99,7 @@ int prt_d(int num, int fd)
 char *conv_d(long int number, int base, int checks)
 {
 	static char *arr;
-	static char *buff[50];
+	static char buff[50];
 	char sign = 0;
 	char *str;
 	unsigned long n = number;

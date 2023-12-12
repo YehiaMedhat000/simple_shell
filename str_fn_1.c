@@ -1,88 +1,119 @@
 #include "main.h"
 
 /**
- * _strcspn - Calculates the length of
- * a string prefix which doesn't have
- * any char in the reject chars
- * @s: The string being searched
- * @reject: The bytes to search in s
- * Return: Length of prefix which
- * doesn't have bytes in reject
+ * begins_with - Checks if str begins
+ * with the string check
+ * @str: String to check
+ * @check: The set of characters to
+ * check if they exist in str
+ * Return: Pointer to next char check
+ * if it exists in str, NULL otherwise
  */
 
-size_t _strcspn(const char *s, const char *reject)
+char *begins_with(const char *str, const char *check)
 {
-	size_t len_prefix = 0;
-	int count_in = 0, count_acc;
-	int len_reject = _strlen(reject);
-
-	if (!s || !reject || !*s)
-		return (0);
-	if (!*reject)
-		return (_strlen(s));
-
-	while (*s)
+	while (*check)
 	{
-		count_acc = 0;
-		count_in = 0;
-		while (reject[count_acc])
-		{
-			if (*s == reject[count_acc])
-			{
-				s++;
-				count_acc++;
-			}
-			else
-			{
-				count_in++;
-				count_acc++;
-			}
-		}
-		if (count_in != len_reject)
-			break;
-
-		len_prefix++;
-		s++;
-		continue;
+		if (*check++ != *str++)
+			return (NULL);
 	}
-	return (len_prefix);
+	return ((char *)str);
 }
 
 /**
- * _strtok_r -
- * @str: The string to tokenize
- * @delim: String of the delimiters
- * @saveptr: Pointer to the next token
- * for the next execution
- * Return: Pointer to the next token
- * NULL if there are no more tokens
+ * _strcpy - Copies str1 to str2
+ * @str1: The destination string
+ * @str2: The source string
+ * Return: str1
  */
 
-char *_strtok_r(char *str, const char *delim, char **saveptr)
+char *_strcpy(char *str1, char *str2)
 {
-	char *tok_end;
+	int j = 0;
 
-	if (str == NULL)
-		str = *saveptr;
-	if (!*str)
+	if (str1 == str2 || str2 == 0)
+		return (str1);
+	while (str2[j])
 	{
-		*saveptr = str;
-		return (NULL);
+		str1[j] = str2[j];
+		j++;
 	}
+	str2[j] = 0;
+	return (str1);
+}
 
-	str += _strspn(str, delim);
-	if (!*str)
-	{
-		*saveptr = str;
+/**
+ * _strdup - Duplicates a string for
+ * assignment purposes from const char
+ * @ptr: Char pointer to the string to
+ * duplicate
+ * Return: ptr, (NULL) in failure
+ */
+
+char *_strdup(const char *ptr)
+{
+	int len = 0;
+	char *buff;
+
+	if (ptr == NULL)
 		return (NULL);
-	}
-	tok_end = str + _strcspn(str, delim);
-	if (!*tok_end)
+	while (*ptr++)
+		len++;
+	buff = malloc(sizeof(char) * len);
+	if (!buff)
+		return (NULL);
+	for (len++; len--;)
+		buff[len] = *--ptr;
+	return (buff);
+}
+
+/**
+ * _strncpy - Copies given number of
+ * bytes from one string to another
+ * @str1: Destination string
+ * @str2: Source string
+ * @n: Number of bytes to copy
+ * Return: The output string
+ */
+
+char *_strncpy(char *str1, char *str2, int n)
+{
+	int j = 0, k;
+	char *ptr = str1;
+
+	while (str2[j] && j < n - 1)
 	{
-		*saveptr = tok_end;
-		return (str);
+		str1[j] = str2[j];
+		j++;
 	}
-	*tok_end = 0;
-	*saveptr = tok_end + 1;
-	return (str);
+	if (j < n)
+	{
+		k = j;
+		while (k < n)
+		{
+			str1[k] = 0;
+			k++;
+		}
+	}
+	return (ptr);
+}
+
+/**
+ * _strcat - Custom implementation of
+ * the strcat function
+ * @destination: The string to output
+ * @source: The source string
+ * Return: Pointer to destination
+ */
+
+char *_strcat(char *destination, char *source)
+{
+	char *ptr = destination;
+
+	while (*destination)
+		destination++;
+	while (*source)
+		*destination++ = *source++;
+	*destination = *source;
+	return (ptr);
 }

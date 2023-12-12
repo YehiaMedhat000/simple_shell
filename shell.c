@@ -38,8 +38,8 @@ int shell(info *data, char **argv)
 	if (bltin == -2)
 	{
 		if (data->error_n == -1)
-			exit(data->stat)
-		exit(data->error_n)
+			exit(data->stat);
+		exit(data->error_n);
 	}
 	return (bltin);
 }
@@ -78,8 +78,8 @@ int f_bltin(info *data)
 			bltin = blt[j].fn(data);
 			break;
 		}
-		return (bltin);
 	}
+	return (bltin);
 }
 
 /**
@@ -100,7 +100,7 @@ void f_bash(info *data)
 		data->lcount++;
 		data->lcount_flag = 0;
 	}
-	for (j = 0; l = 0; data->args[j]; j++)
+	for (j = 0, l = 0; data->args[j]; j++)
 	{
 		if (!qdelim(data->args[j], " \t\n"))
 			l++;
@@ -143,7 +143,7 @@ void fork_bash(info *data)
 	}
 	if (chld == 0)
 	{
-		if (execve(data->path, info->av, get_envrn(data)) == -1)
+		if (execve(data->path, data->av, get_envrn(data)) == -1)
 		{
 			fr_inf(data, 1);
 			if (errno == EACCES)
@@ -153,7 +153,7 @@ void fork_bash(info *data)
 	}
 	else
 	{
-		wait(&(info->stat));
+		wait(&(data->stat));
 		if (WIFEXITED(data->stat))
 		{
 			data->stat = WEXITSTATUS(data->stat);

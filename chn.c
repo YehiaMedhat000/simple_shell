@@ -11,7 +11,7 @@
 
 int qchn(info *data, char *buffer, size_t *s)
 {
-	size_t i = s;
+	size_t i = *s;
 
 	if (buffer[i] == '|' && buffer[i + 1] == '|')
 	{
@@ -86,11 +86,11 @@ int rplc_als(info *data)
 
 	for (j = 0; j < 10; j++)
 	{
-		node = nd_begins_with(data->als);
+		node = nd_begins_with(data->als, data->av[0], '=');
 		if (!node)
 			return (0);
 		free(data->av[0]);
-		str = _strchr(str + 1);
+		str = _strchr(node->s, '=');
 		if (!str)
 			return (0);
 		str = _strdup(str + 1);
@@ -116,7 +116,7 @@ int rplc_vars(info *data)
 
 	for (j = 0; data->av[j]; j++)
 	{
-		if (data->av[j][0] != '$' || !info->av[j][1])
+		if (data->av[j][0] != '$' || !(data)->av[j][1])
 			continue;
 		if (!_strcmp(data->av[j], "$?"))
 		{
@@ -137,7 +137,7 @@ int rplc_vars(info *data)
 			_strdup(_strchr(node->s, '=') + 1));
 			continue;
 		}
-		rplc_str(&info->av[j], _strdup(""));
+		rplc_str(&(data)->av[j], _strdup(""));
 	}
 	return (0);
 }
@@ -152,7 +152,7 @@ int rplc_vars(info *data)
 
 int rplc_str(char **old_str, char *new_str)
 {
-	free(*old);
-	*old = new;
+	free(*old_str);
+	*old_str = new_str;
 	return (1);
 }

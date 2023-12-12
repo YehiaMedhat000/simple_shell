@@ -100,9 +100,9 @@ ssize_t rd_buf(info *data, char *buffer, size_t *s)
 	if (*s)
 		return (0);
 	rd = read(data->rdfd, buffer, R_BUF_S);
-	if (r >= 0)
+	if (rd >= 0)
 		*s = rd;
-	return (r);
+	return (rd);
 }
 
 /**
@@ -114,7 +114,7 @@ ssize_t rd_buf(info *data, char *buffer, size_t *s)
  * Return: Number of read bytes
  */
 
-int _getline(info *data, char **buffer, size_t len)
+int _getline(info *data, char **buffer, size_t *len)
 {
 	static char buffcpy[R_BUF_S];
 	static size_t j, l;
@@ -149,7 +149,7 @@ int _getline(info *data, char **buffer, size_t len)
 	*buffer = str;
 	return (sh);
 }
-sgnthndlr()
+
 /**
  * sgnthndlr - Handles <C-c>
  * @signumber: The number of the signal

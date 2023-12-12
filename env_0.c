@@ -10,7 +10,7 @@
 
 char *_getenv(info *data, const char *var)
 {
-	llist node = data->env;
+	llist *node = data->env;
 	char *i;
 
 	while (node)
@@ -82,7 +82,7 @@ int unstenv(info *data)
 int pplt_env_lst(info *data)
 {
 	llist *node = NULL;
-	size_t n;
+	size_t j;
 
 	for (j = 0; environ[j]; j++)
 		add_nd_end(&node, environ[j], 0);

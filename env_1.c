@@ -61,7 +61,7 @@ int _stenv(info *data, char *var_name, char *val)
 	if (!var_name || !val)
 		return (0);
 
-	buffer = malloc(_strlen(var_name) + _strlen(value) + 2);
+	buffer = malloc(_strlen(var_name) + _strlen(val) + 2);
 	if (!buffer)
 		return (0);
 

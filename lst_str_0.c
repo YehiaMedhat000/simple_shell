@@ -29,8 +29,8 @@ llist *add_nd(llist **hd, const char *s, int n)
 			return (NULL);
 		}
 	}
-	nhd->next = *h;
-	*h = nhd;
+	nhd->next = *hd;
+	*hd = nhd;
 	return (nhd);
 }
 
@@ -49,7 +49,7 @@ llist *add_nd_end(llist **h, const char *s, int n)
 
 	if (!h)
 		return (NULL);
-	nd = *head;
+	nd = *h;
 	nnd = malloc(sizeof(llist));
 	if (!nnd)
 		return (NULL);
@@ -82,13 +82,13 @@ llist *add_nd_end(llist **h, const char *s, int n)
  * Return: Size of the llist
  */
 
-size_t prt_lst_str(llist **head)
+size_t prt_lst_str(const llist *head)
 {
 	size_t j = 0;
 
 	while (head)
 	{
-		_puts(head->s ? h->str : "(nil)");
+		_puts(head->s ? head->s : "(nil)");
 		_puts("\n");
 		head = head->next;
 		j++;
@@ -101,7 +101,7 @@ size_t prt_lst_str(llist **head)
  * given index
  * @h: Head
  * @idx: Index of the node
- * Return: if deleted successfully,
+ * Return: 1 if deleted successfully,
  * 0 otherwise
  */
 
@@ -111,7 +111,7 @@ int dlt_nd_idx(llist **h, unsigned int idx)
 	unsigned int j = 0;
 
 	if (!h || !*h)
-		return (NULL);
+		return (0);
 	if (!idx)
 	{
 		nd = *h;

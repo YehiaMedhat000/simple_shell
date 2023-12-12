@@ -87,10 +87,10 @@ typedef struct command_info
 	int error_n;
 	int lcount_flag;
 	char *file;
-	llist env;
+	llist *env;
 	char **environ;
-	llist hist;
-	llist als;
+	llist *hist;
+	llist *als;
 	int ch_env;
 	int stat;
 	char **bash_buf;
@@ -112,16 +112,16 @@ typedef struct blt_in
 	int (*fn)(info *);
 } blt_in;
 
-/* shell.c */
+/* shell.c done */
 int shell(info *, char **);
 int f_bltin(info *);
 void f_bash(info *);
 void fork_bash(info *);
 
-/* path.c */
+/* path.c done */
 int qbash(info *, char *);
 char *chardup(char *, int, int);
-char f_path(info *, char *, char *);
+char *f_path(info *, char *, char *);
 
 /* sh_loop.c */
 int sh_loop(char **);
@@ -132,104 +132,98 @@ int eprtchr(char);
 int prtfd(char c, int fd);
 int prtchr_fd(char *str, int fd);
 
-/* str_fn_0.c */
+/* str_fn_0.c done */
 int _strlen(char *str);
-int _strncmp(const char *s1, const char *s2, size_t n);
-size_t _strspn(const char *s, const char *accept);
-char *_strtok(char *str, const char *delim);
-char *_strchr(const char *s, int c);
-
-/* str_fn_1.c */
-char *_strtok_r(char *str, const char *delim, char **saveptr);
-size_t _strcspn(const char *s, const char *reject);
 int _strcmp(char *, char*);
+int _strncmp(const char *s1, const char *s2, size_t n);
+char *_strchr(char *s, int c);
+void _puts(char *);
+
+/* str_fn_1.c done */
 char *begins_with(const char *, const char *);
+char *_strcpy(char *, char*);
+char *_strdup(const char *);
+char *_strncpy(char *, char *, int);
 char *_strcat(char *, char *);
 
 /* str_fn_2.c */
-char *_strcpy(char *, char*);
-char *_strncpy(char *, char *, int);
-char *_strdup(const char *);
-void _puts(char *);
 int _putchar(char);
-
-/* str_fn_3.c */
 char *_strncat(char *, char*, int);
 char **_strtow(char *, char *);
 char **_strtowchr(char *, char);
 
-/* mem.c */
+/* mem.c done */
 char *_memset(char *, char, unsigned int);
 void _free(char **);
 void *_realloc(void *, unsigned int, unsigned int);
 int bffree(void **);
 
-/* func_0.c */
+/* func_0.c done */
 int interact(info *);
 int qdelim(char, char*);
 int qalpha(int);
 int _atoi(char *);
 
-/* func_1.c */
+/* func_1.c done */
 int _etoi(char *);
 void prt_err(info *, char *);
 int prt_d(int, int);
 char *conv_d(long int, int, int);
 void rm_comnt(char *);
 
-/* bltin_emlatrs_0.c */
+/* bltin_emlatrs_0.c done */
 int _ext(info *);
 int _cd(info *);
 int _hlp(info *);
 
-/* bltin_emlators_1.c */
+/* bltin_emlators_1.c done */
 int _hstr(info *);
 int _als(info *);
 
-/* _getline.c */
+/* _getline.c done */
 ssize_t get_in(info *);
-int _getline(info *, char **, size_t *);
-void sgnthndlr(int);
+int _getline(info *data, char **buffer, size_t *len);
+void sgnthndlr(__attribute__((unused))int signumber);
 
-/* inf.c */
+/* inf.c done */
 void clr_inf(info *);
 void st_inf(info *, char **);
 void fr_inf(info *, int);
 
-/* env_0.c */
+/* env_0.c done */
 char *_getenv(info *, const char *);
 int _env(info *);
 int stenv(info *);
 int unstenv(info *);
 int pplt_env_lst(info *);
 
-/* env_1.c */
+/* env_1.c done */
 char **get_envrn(info *);
 int _unstenv(info *, char *);
 int _stenv(info *, char *, char *);
 
-/* file_io_fn.c */
+/* file_io_fn.c done */
 char *get_hstfile(info *);
 int wrt_hst(info *);
 int rd_hst(info *);
 int bld_hst_lst(info *, char *, int);
 int rnmbr_hst(info *);
 
-/* lst_str_0.c */
+/* lst_str_0.c done */
 llist *add_nd(llist **, const char *, int);
 llist *add_nd_end(llist **, const char *, int);
 size_t prt_lst_str(const llist *);
 int dlt_nd_idx(llist **, unsigned int);
 void fr_lst(llist **);
 
-/* lst_str_1.c */
+/* lst_str_1.c done */
 size_t lst_ln(const llist *);
 char **lst_str(llist *);
 size_t prt_lst(const llist *);
 llist *nd_begins_with(llist *, char *, char);
 ssize_t get_nd_idx(llist *, llist *);
 
-/* chn.c */
+/* chn.c done */
 int qchn(info *, char *, size_t *);
 void chk_chn(info *, char *, size_t *, size_t, size_t);
 int rplc_als(info *);

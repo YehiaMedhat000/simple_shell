@@ -17,7 +17,7 @@ size_t lst_ln(const llist *head)
 	}
 	return (j);
 }
-lst_str
+
 /**
  * lst_str - Gets the strings in llist
  * @h: Head
@@ -29,7 +29,7 @@ char **lst_str(llist *h)
 {
 	llist *nd = h;
 	size_t j = lst_ln(h), i;
-	char *strings;
+	char **strings;
 	char *curstr;
 
 	if (!h || !j)
@@ -94,9 +94,32 @@ llist *nd_begins_with(llist *head, char *pre, char chr)
 	while (head)
 	{
 		str = begins_with(head->s, pre);
-		if (str && ((chr == -1) || (*str == c)))
+		if (str && ((chr == -1) || (*str == chr)))
 			return (head);
 		head = head->next;
 	}
 	return (NULL);
+}
+
+/**
+ * get_nd_idx - Gets index of some
+ * given node
+ * @h: Head
+ * @nd: The given node
+ * Return: Index of the node in success
+ * (-1) in failure
+ */
+
+ssize_t get_nd_idx(llist *h, llist *nd)
+{
+	size_t j = 0;
+
+	while (h)
+	{
+		if (h == nd)
+			return (j);
+		h = h->next;
+		j++;
+	}
+	return (-1);
 }

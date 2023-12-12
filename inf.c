@@ -51,7 +51,7 @@ void st_inf(info *data, char **argv)
 
 void fr_inf(info *data, int check)
 {
-	ffree(data->av);
+	_free(data->av);
 	data->av = NULL;
 	data->path = NULL;
 	if (check)
@@ -64,9 +64,9 @@ void fr_inf(info *data, int check)
 			fr_lst(&(data->hist));
 		if (data->als)
 			fr_lst(&(data->als));
-		ffree(data->environ);
+		_free(data->environ);
 		data->environ = NULL;
-		bfree((void **)data->bash_buf);
+		bffree((void **)data->bash_buf);
 		if (data->rdfd > 2)
 			close(data->rdfd);
 		_putchar(BUF_FLUSH);
