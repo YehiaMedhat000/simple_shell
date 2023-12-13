@@ -6,42 +6,15 @@
  * Return: Size of str in chars
  */
 
-int _strlen(char *str)
+size_t _strlen(char *str)
 {
-	int len = 0;
+	size_t len = 0;
 
 	if (!str || !*str)
 		return (0);
 	while (*str++)
 		len++;
 	return (len);
-}
-
-/**
- * _strcmp - Compares two strings
- * and check which is larger
- * or if they equal
- * @str1: First string in comparison
- * @str2: Second string in comparison
- * Return: (0) if they are equal
- * difference between first different
- * char between them, it could be
- * negative of positive
- */
-
-int _strcmp(char *str1, char *str2)
-{
-	while (*str1 && *str2)
-	{
-		if (*str1 != *str2)
-			return (*str1 - *str2);
-		str1++;
-		str2++;
-	}
-	if (*str1 == *str2)
-		return (0);
-	else
-		return (*str1 < *str2 ? -1 : 1);
 }
 
 /**
@@ -80,31 +53,57 @@ int _strncmp(const char *s1, const char *s2, size_t n)
  * NULL in case of failure
  */
 
-char *_strchr(char *s, int c)
+char *_strchr(const char *s, int c)
 {
-	do {
-		if (*s == c)
-			return (s);
-	} while (*s++);
-	return (NULL);
+	int idx = 0;
+
+	while (*(s + idx))
+	{
+		if (*(s + idx) == c)
+			return ((char *)(s + idx));
+		idx++;
+	}
+	return ("");
 }
 
 /**
- * _puts - Custom implementation of
- * the puts() function
- * @buff: The buffer to put
- * Return: Nothing (void)
+ * _strspn - Calculates the number of
+ * chars in str which exist in grp
+ * from the beginning
+ * @s: The string to search
+ * @accept: The group characters to search
+ * Return: Number of chars that are in
+ * both grp and str from the beginning
  */
 
-void _puts(char *buff)
+size_t _strspn(const char *s, const char *accept)
 {
-	int j = 0;
+	size_t len = 0;
+	int count_in = 0, count_acc;
 
-	if (!buff)
-		return;
-	while (buff[j])
+	if (!s || !accept)
+		return (0);
+	if (!*s || !*accept)
+		return (0);
+
+	while (*s)
 	{
-		_putchar(buff[j]);
-		j++;
+		count_acc = 0;
+		count_in = 0;
+		while (accept[count_acc])
+		{
+			if (*s == accept[count_acc])
+			{
+				s++;
+				count_in++;
+				count_acc++;
+			}
+			else
+				count_acc++;
+		}
+		len += count_in;
+		if (count_in == 0)
+			break;
 	}
+	return (len);
 }
