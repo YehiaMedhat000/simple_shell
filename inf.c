@@ -29,7 +29,7 @@ void st_inf(info *data, char **argv)
 	if (data->args)
 	{
 		data->av = _strtow(data->args, " \t");
-		if (data->av)
+		if (!data->av)
 		{
 			data->av[0] = _strdup(data->args);
 			data->av[1] = NULL;

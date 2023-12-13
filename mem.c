@@ -29,10 +29,10 @@ void _free(char **buff)
 {
 	char **ptr = buff;
 
-	if (!ptr)
+	if (!buff)
 		return;
-	while (*ptr)
-		free(*ptr++);
+	while (*buff)
+		free(*buff++);
 	free(ptr);
 }
 
