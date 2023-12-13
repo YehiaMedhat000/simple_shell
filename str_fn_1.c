@@ -38,7 +38,7 @@ char *_strcpy(char *str1, char *str2)
 		str1[j] = str2[j];
 		j++;
 	}
-	str2[j] = 0;
+	str1[j] = 0;
 	return (str1);
 }
 
