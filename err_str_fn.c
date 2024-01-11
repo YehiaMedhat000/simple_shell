@@ -1,85 +1,83 @@
 #include "main.h"
 
 /**
- * eprt - Very normal printing function
- * @s: The value to print
+ * eprt - prints an input string
+ * @string: Char pointer
  * Return: Nothing (void)
  */
 
-void eprt(char *s)
+void eprt(char *string)
 {
 	int j = 0;
 
-	if (!s)
+	if (!string)
 		return;
-	while (s[j])
+	while (string[j] != '\0')
 	{
-		eprtchr(s[j]);
+		eprtchr(string[j]);
 		j++;
 	}
 }
 
 /**
- * eprtchr - Prints a char per time
- * like putchar()
- * @chr: The value to print
- * Return: (1) success, (-1) on error
- * and errno is set properly
+ * eprtchr - Error printing function
+ * @chr: Char type
+ * Return: Int type
  */
 
 int eprtchr(char chr)
 {
 	static int j;
-	static char buffer[W_BUF_S];
+	static char buffer[WRBUF];
 
-	if (chr == BUF_FLUSH || j >= W_BUF_S)
+	if (chr == BUFLUSH || j >= WRBUF)
 	{
 		write(2, buffer, j);
 		j = 0;
 	}
-	if (chr != BUF_FLUSH)
+	if (chr != BUFLUSH)
 		buffer[j++] = chr;
 	return (1);
 }
 
 /**
- * prtfd - Printing function
- * @chr: The value to print
- * @fdcr: File descriptor to which
- * chr is written
- * Return: (1) success, (-1) and errno
- * is set properly
+ * prtfd - Bytewise printing function
+ * @chr: Char type
+ * @fdes: File descriptor
+ * Return: Int type
  */
 
-int prtfd(char chr, int fdcr)
+int prtfd(char chr, int fdes)
 {
 	static int j;
-	static char buffer[W_BUF_S];
+	static char buffer[WRBUF];
 
-	if (chr == BUF_FLUSH || j >= W_BUF_S)
+	if (chr == BUFLUSH || j >= WRBUF)
 	{
-		write(fdcr, buffer, j);
+		write(fdes, buffer, j);
 		j = 0;
 	}
-	if (chr != BUF_FLUSH)
+	if (chr != BUFLUSH)
 		buffer[j++] = chr;
 	return (1);
 }
 
 /**
- * prtchr_fd - Printing function
- * @s: The value printed
- * @fdcr: File descirptor
- * Return: Number of printed chars
+ * prtchrfd	- Printing function
+ * @string: Char pointer
+ * @fdes: File descriptor
+ * Return: Int type
  */
 
-int prtchr_fd(char *s, int fdcr)
+int prtchrfd(char *string, int fdes)
 {
 	int j = 0;
 
-	if (!s)
+	if (!string)
 		return (0);
-	while (*s)
-		j += prtfd(*s++, fdcr);
+	while (*string)
+	{
+		j += prtfd(*string++, fdes);
+	}
 	return (j);
 }

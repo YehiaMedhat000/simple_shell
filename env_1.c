@@ -1,88 +1,92 @@
 #include "main.h"
 
 /**
- * get_envrn - Gets copy of environ
+ * get_iron - Copies environ
  * @data: Info struct
- * Return: Copy of environ
+ * Return: Char double pointer
  */
 
-char **get_envrn(info *data)
+char **get_iron(inf *data)
 {
-	if (!data->environ || data->ch_env)
+	if (!data->envron || data->chenv)
 	{
-		data->environ = lst_str(data->env);
-		data->ch_env = 0;
+		data->envron = lststr(data->env);
+		data->chenv = 0;
 	}
-	return (data->environ);
+
+	return (data->envron);
 }
 
 /**
- * _unstenv - Removes environment variable
+ * _unstenv - Remove env vrbl
  * @data: Info struct
- * @var: Variable to remove
- * Return: (1) success, (0) otherwise
+ * @vrbl: Char pointer
+ * Return: Int type
  */
 
-int _unstenv(info *data, char *var)
+int _unstenv(inf *data, char *vrbl)
 {
-	llist *node = data->env;
-	size_t n = 0;
-	char *str;
+	llist *nd = data->env;
+	size_t j = 0;
+	char *pntr;
 
-	while (node)
+	if (!nd || !vrbl)
+		return (0);
+
+	while (nd)
 	{
-		str = begins_with(node->s, var);
-		if (str && *str == '=')
+		pntr = find_substring(nd->s, vrbl);
+		if (pntr && *pntr == '=')
 		{
-			data->ch_env = dlt_nd_idx(&(data->env), n);
-			n = 0;
-			node = data->env;
+			data->chenv = dltndidx(&(data->env), j);
+			j = 0;
+			nd = data->env;
 			continue;
 		}
-		node = data->env;
-		n++;
+		nd = nd->next;
+		j++;
 	}
-	return (data->ch_env);
+	return (data->chenv);
 }
 
 /**
- * _stenv - Inits an environment variable
+ * _stenv - Auxiliary function
  * @data: Info struct
- * @var_name: Variable name
- * @val: Variable's value
- * Return: (0) success, (1) failure
+ * @vrbl: Char pointer
+ * @val: Char pointer
+ * Return: Int type
  */
 
-int _stenv(info *data, char *var_name, char *val)
+int _stenv(inf *data, char *vrbl, char *val)
 {
-	char *str, *buffer = NULL;
-	llist *node;
+	char *buffer = NULL;
+	llist *nd;
+	char *pntr;
 
-	if (!var_name || !val)
+	if (!vrbl || !val)
 		return (0);
 
-	buffer = malloc(_strlen(var_name) + _strlen(val) + 2);
+	buffer = malloc(_strlen(vrbl) + _strlen(val) + 2);
 	if (!buffer)
-		return (0);
-
-	_strcpy(buffer, var_name);
-	_strcpy(buffer, "=");
-	_strcpy(buffer, val);
-	node = data->env;
-	while (node)
+		return (1);
+	_strcpy(buffer, vrbl);
+	_strcat(buffer, "=");
+	_strcat(buffer, val);
+	nd = data->env;
+	while (nd)
 	{
-		str = begins_with(node->s, var_name);
-		if (str && *str == '=')
+		pntr = find_substring(nd->s, vrbl);
+		if (pntr && *pntr == '=')
 		{
-			free(node->s);
-			node->s = buffer;
-			data->ch_env = 1;
+			free(nd->s);
+			nd->s = buffer;
+			data->chenv = 1;
 			return (0);
 		}
-		node = node->next;
+		nd = nd->next;
 	}
-	add_nd_end(&(data->env), buffer, 0);
+	addnden(&(data->env), buffer, 0);
 	free(buffer);
-	data->ch_env = 1;
+	data->chenv = 1;
 	return (0);
 }

@@ -1,85 +1,84 @@
 #include "main.h"
 
 /**
- * qbash - Checks if file is program
- * @data: info struct
- * @p: File path
- * Return: 1 if file is a prog
- * 0 otherwise
+ * qbash - determines if a file is an executable command
+ * @data: the data struct
+ * @pth: pth to the file
+ * Return: 1 if true, 0 otherwise
  */
 
-int qbash(info *data, char *p)
+int qbash(inf *data, char *pth)
 {
-	struct stat sta;
+	struct stat st;
 
 	(void)data;
-	if (!p || stat(p, &sta))
+	if (!pth || stat(pth, &st))
 		return (0);
-	if (sta.st_mode & S_IFREG)
+
+	if (st.st_mode & S_IFREG)
+	{
 		return (1);
+	}
 	return (0);
 }
 
 /**
- * chardup - Duplicates chars
- * @strpath: The PATH var
- * @init: Initial index
- * @stp: The stopping index
- * Return: The duplicate buffer
+ * dupchr - duplicates characters
+ * @pthptr: the pth string
+ * @begin: starting index
+ * @end: stopping index
+ * Return: pointer to new buffer
  */
 
-char *chardup(char *strpath, int init, int stp)
+char *dupchr(char *pthptr, int begin, int end)
 {
-	static char buffer[R_BUF_S];
-	int j = 0, n = 0;
+	static char buffer[1024];
+	int j = 0, i = 0;
 
-	for (n = 0, j = init; j < stp; j++)
-	{
-		if (strpath[j] != ':')
-			buffer[n++] = strpath[j];
-	}
-	buffer[n] = 0;
+	for (i = 0, j = begin; j < end; j++)
+		if (pthptr[j] != ':')
+			buffer[i++] = pthptr[j];
+	buffer[i] = 0;
 	return (buffer);
 }
 
 /**
- * f_path - Finds command in PATH
- * @data: Info struct
- * @strpath: PATH value
- * @file: Command file to find
- * Return: If file is found
- * Full path of the file, or NULL
+ * fpth - finds this prog in the pth string
+ * @data: the data struct
+ * @pthptr: the pth string
+ * @prog: the prog to find
+ * Return: Char pointer
  */
 
-char *f_path(info *data, char *strpath, char *file)
+char *fpth(inf *data, char *pthptr, char *prog)
 {
-	int j = 0, idx = 0;
-	char *p;
+	int j = 0, curr_pos = 0;
+	char *pth;
 
-	if (!strpath)
+	if (!pthptr)
 		return (NULL);
-	if ((_strlen(file) > 2) && begins_with(file, "./"))
+	if ((_strlen(prog) > 2) && find_substring(prog, "./"))
 	{
-		if (qbash(data, file))
-			return (file);
+		if (qbash(data, prog))
+			return (prog);
 	}
 	while (1)
 	{
-		if (!strpath[j] || strpath[j] == ':')
+		if (!pthptr[j] || pthptr[j] == ':')
 		{
-			p = chardup(strpath, idx, j);
-			if (!*p)
-				_strcat(p, file);
+			pth = dupchr(pthptr, curr_pos, j);
+			if (!*pth)
+				_strcat(pth, prog);
 			else
 			{
-				_strcat(p, "/");
-				_strcat(p, file);
+				_strcat(pth, "/");
+				_strcat(pth, prog);
 			}
-			if (qbash(data, p))
-				return (p);
-			if (!strpath[j])
+			if (qbash(data, pth))
+				return (pth);
+			if (!pthptr[j])
 				break;
-			idx = j;
+			curr_pos = j;
 		}
 		j++;
 	}

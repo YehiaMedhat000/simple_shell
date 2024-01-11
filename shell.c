@@ -1,151 +1,142 @@
 #include "main.h"
 
 /**
- * shell - Main looping function
+ * shell - Main loopin function
  * @data: Info struct
- * @argv: Argument values
- * Return: (0) success, (1) failure
- * or exits with exit code
+ * @agv: Char double pointer
+ * Return: Int type
  */
 
-int shell(info *data, char **argv)
+int shell(inf *data, char **agv)
 {
-	ssize_t i = 0;
-	int bltin = 0;
+	ssize_t ret = 0;
+	int bltinret = 0;
 
-	while (i != -1 && bltin != -2)
+	while (ret != -1 && bltinret != -2)
 	{
-		clr_inf(data);
+		clinf(data);
 		if (interact(data))
 			_puts("$ ");
-		eprtchr(BUF_FLUSH);
-		i = get_in(data);
-		if (i != -1)
+		eprtchr(BUFLUSH);
+		ret = getin(data);
+		if (ret != -1)
 		{
-			st_inf(data, argv);
-			bltin = f_bltin(data);
-			if (bltin == -1)
-				f_bash(data);
+			stinf(data, agv);
+			bltinret = fbltin(data);
+			if (bltinret == -1)
+				fcmd(data);
 		}
 		else if (interact(data))
 			_putchar('\n');
-		fr_inf(data, 0);
+		frinf(data, 0);
 	}
-	wrt_hst(data);
-	fr_inf(data, 1);
-	if (!interact(data) && data->stat)
-		exit(data->stat);
-	if (bltin == -2)
+	wrthst(data);
+	frinf(data, 1);
+	if (!interact(data) && data->sat)
+		exit(data->sat);
+	if (bltinret == -2)
 	{
-		if (data->error_n == -1)
-			exit(data->stat);
-		exit(data->error_n);
+		if (data->errn == -1)
+			exit(data->sat);
+		exit(data->errn);
 	}
-	return (bltin);
+	return (bltinret);
 }
 
 /**
- * f_bltin - Finds commands which are
- * builtin the shell
+ * fbltin - Auxiliary function
  * @data: Info struct
- * Return: (-1) if not found,
- * (0) if prog executed successfully
- * (1) if prog found and not executed
- * successfully
- * (-2) if prog sends signal exit()
+ * Return: Int tp
  */
 
-int f_bltin(info *data)
+int fbltin(inf *data)
 {
-	int j, bltin = -1;
-	blt_in blt[] = {
-		{"exit", _ext},
-		{"env", _env},
-		{"help", _hlp},
-		{"history", _hstr},
-		{"setenv", stenv},
-		{"unsetenv", unstenv},
-		{"cd", _cd},
-		{"alias", _als},
+	int ith, bltinret = -1;
+	bltin table[] = {
+		{"exit", _lexit},
+		{"env", _lenv},
+		{"help", _lhelp},
+		{"history", _lhst},
+		{"setenv", _lstenv},
+		{"unsetenv", _lunstenv},
+		{"cd", _lcd},
+		{"alias", _lals},
 		{NULL, NULL}
 	};
 
-	for (j = 0; blt[j].type; j++)
-	{
-		if (_strcmp(data->av[0], blt[j].type) == 0)
+	for (ith = 0; table[ith].tp; ith++)
+		if (_strcmp(data->av[0], table[ith].tp) == 0)
 		{
-			data->lcount++;
-			bltin = blt[j].fn(data);
+			data->lc++;
+			bltinret = table[ith].fn(data);
 			break;
 		}
-	}
-	return (bltin);
+	return (bltinret);
 }
 
 /**
- * f_bash - Checks for the commands
- * location in PATH var
+ * fcmd - Auxiliary function
  * @data: Info struct
  * Return: Nothing (void)
  */
 
-void f_bash(info *data)
+void fcmd(inf *data)
 {
-	char *path = NULL;
-	int j, l;
+	char *pathpntr = NULL;
+	int ith, kth;
 
-	data->path = data->av[0];
-	if (data->lcount_flag == 1)
+	data->pth = data->av[0];
+	if (data->lcf == 1)
 	{
-		data->lcount++;
-		data->lcount_flag = 0;
+		data->lc++;
+		data->lcf = 0;
 	}
-	for (j = 0, l = 0; data->args[j]; j++)
+	for (ith = 0, kth = 0; data->agm[ith]; ith++)
+		if (!qdelim(data->agm[ith], " \t\n"))
+			kth++;
+	if (!kth)
+		return;
+
+	pathpntr = fpth(data, _getenv(data, "PATH="), data->av[0]);
+	if (pathpntr)
 	{
-		if (!qdelim(data->args[j], " \t\n"))
-			l++;
-	}
-	path = f_path(data, _getenv(data, "PATH="), data->av[0]);
-	if (path)
-	{
-		data->path = path;
-		fork_bash(data);
+		data->pth = pathpntr;
+		forsh(data);
 	}
 	else
 	{
 		if ((interact(data) || _getenv(data, "PATH=")
-		|| data->av[0][0] == '/') && qbash(data, data->av[0]))
-		fork_bash(data);
-		else if (*(data->args) != '\n')
+			|| data->av[0][0] == '/') && qbash(data, data->av[0]))
+			forsh(data);
+		else if (*(data->agm) != '\n')
 		{
-			data->stat = 127;
-			prt_err(data, "Seems not found\n");
+			data->sat = 127;
+			prterr(data, "not found\n");
 		}
 	}
 }
 
 /**
- * fork_bash - Forks for runnig exec on
- * child process
- * @data: info struct
+ * forsh - Forking function
+ * @data: Info struct
  * Return: Nothing (void)
  */
 
-void fork_bash(info *data)
+void forsh(inf *data)
 {
-	pid_t chld;
+	pid_t cpid;
 
-	chld = fork();
-	if (chld == -1)
+	cpid = fork();
+	if (cpid == -1)
 	{
-		perror("Error: ");
+		perror("Error:");
 		return;
 	}
-	if (chld == 0)
+	if (cpid == 0)
 	{
-		if (execve(data->path, data->av, get_envrn(data)) == -1)
+		if (execve(data->pth, data->av, get_iron(data)) == -1)
 		{
-			fr_inf(data, 1);
+			frinf(data, 1);
 			if (errno == EACCES)
 				exit(126);
 			exit(1);
@@ -153,13 +144,12 @@ void fork_bash(info *data)
 	}
 	else
 	{
-		wait(&(data->stat));
-		if (WIFEXITED(data->stat))
+		wait(&(data->sat));
+		if (WIFEXITED(data->sat))
 		{
-			data->stat = WEXITSTATUS(data->stat);
-			if (data->stat == 126)
-				prt_err(data, "Permission denied\n");
+			data->sat = WEXITSTATUS(data->sat);
+			if (data->sat == 126)
+				prterr(data, "Permission denied\n");
 		}
 	}
-
 }

@@ -1,68 +1,137 @@
 #include "main.h"
 
 /**
- * get_hstfile - Retrieves history
- * file for the history commands
+ * gethstf - Gets history file
  * @data: Info struct
- * Return: Buffer of the history
+ * Return: Char pointer
  */
 
-char *get_hstfile(info *data)
+char *gethstf(inf *data)
 {
-	char *buffer, *d;
+	char *buffer, *drctry;
 
-	d = _getenv(data, "HOME=");
-	if (!d)
+	drctry = _getenv(data, "HOME=");
+	if (!drctry)
 		return (NULL);
-	buffer = malloc(sizeof(char) * (_strlen(d) + _strlen(HIST_F) + 2));
+	buffer = malloc(sizeof(char) * (_strlen(drctry) + _strlen(HSTF) + 2));
 	if (!buffer)
 		return (NULL);
 	buffer[0] = 0;
-	_strcpy(buffer, d);
+	_strcpy(buffer, drctry);
 	_strcat(buffer, "/");
-	_strcat(buffer, HIST_F);
+	_strcat(buffer, HSTF);
 	return (buffer);
 }
 
 /**
- * wrt_hst - Writes history to a buffer
- * existing or newly created
+ * wrthst - Creates a file, or append
+ * to an existing one
  * @data: Info struct
- * Return: (1) success, (-1) on failure
+ * Return: Int type
  */
 
-int wrt_hst(info *data)
+int wrthst(inf *data)
 {
-	ssize_t fd;
-	char *file = get_hstfile(data);
+	ssize_t fdes;
+	char *file = gethstf(data);
 	llist *nd = NULL;
 
 	if (!file)
 		return (-1);
-	fd = open(file, O_CREAT | O_TRUNC | O_RDWR, 0644);
+
+	fdes = open(file, O_CREAT | O_TRUNC | O_RDWR, 0644);
 	free(file);
-	if (fd == -1)
+	if (fdes == -1)
 		return (-1);
-	for (nd = data->hist; nd; nd = nd->next)
+	for (nd = data->hst; nd; nd = nd->next)
 	{
-		prtchr_fd(nd->s, fd);
-		prtfd('\n', fd);
+		prtchrfd(nd->s, fdes);
+		prtd('\n', fdes);
 	}
-	prtfd(BUF_FLUSH, fd);
-	close(fd);
+	prtfd(BUFLUSH, fdes);
+	close(fdes);
 	return (1);
 }
 
 /**
- * renum_hst - Reindex history list
- * after changes occurred
+ * rdhst - Reads history
  * @data: Info struct
- * Return: The edited histc
+ * Return: Int type
  */
 
-int renum_hst(info *data)
+int rdhst(inf *data)
 {
-	llist *nd = data->hist;
+	int j, end = 0, lcnt = 0;
+	ssize_t fdes, len, siz = 0;
+	struct stat st;
+	char *buffer = NULL, *file = gethstf(data);
+
+	if (!file)
+		return (0);
+
+	fdes = open(file, O_RDONLY);
+	free(file);
+	if (fdes == -1)
+		return (0);
+	if (!fstat(fdes, &st))
+		siz = st.st_size;
+	if (siz < 2)
+		return (0);
+	buffer = malloc(sizeof(char) * (siz + 1));
+	if (!buffer)
+		return (0);
+	len = read(fdes, buffer, siz);
+	buffer[siz] = 0;
+	if (len <= 0)
+		return (free(buffer), 0);
+	close(fdes);
+	for (j = 0; j < siz; j++)
+		if (buffer[j] == '\n')
+		{
+			buffer[j] = 0;
+			bldhstlst(data, buffer + end, lcnt++);
+			end = j + 1;
+		}
+	if (end != j)
+		bldhstlst(data, buffer + end, lcnt++);
+	free(buffer);
+	data->hstc = lcnt;
+	while (data->hstc-- >= HSTAX)
+		dltndidx(&(data->hst), 0);
+	rumberhst(data);
+	return (data->hstc);
+}
+
+/**
+ * bldhstlst - Builts llist of history
+ * @data: Info struct
+ * @buffer: Char pointer
+ * @lcnt: Int type
+ * Return: Int type
+ */
+
+int bldhstlst(inf *data, char *buffer, int lcnt)
+{
+	llist *nd = NULL;
+
+	if (data->hst)
+		nd = data->hst;
+	addnden(&nd, buffer, lcnt);
+
+	if (!data->hst)
+		data->hst = nd;
+	return (0);
+}
+
+/**
+ * rumberhst - Renindexes history
+ * @data: Int type
+ * Return: Int type
+ */
+
+int rumberhst(inf *data)
+{
+	llist *nd = data->hst;
 	int j = 0;
 
 	while (nd)
@@ -70,75 +139,5 @@ int renum_hst(info *data)
 		nd->n = j++;
 		nd = nd->next;
 	}
-	return (data->histc);
-}
-
-/**
- * rd_hst - Reads history from history
- * file for history functions
- * @data: Info struct
- * Return: (histc) success
- * or (0) on failure
- */
-
-int rd_hst(info *data)
-{
-	int j, end = 0, lcnt = 0;
-	ssize_t fdcr, len, fs = 0;
-	struct stat st;
-	char *buffer = NULL, *file = get_hstfile(data);
-
-	if (!file)
-		return (0);
-	fdcr = open(file, O_RDONLY);
-	free(file);
-	if (fdcr == -1)
-		return (0);
-	if (!fstat(fdcr, &st))
-		fs = st.st_size;
-	if (fs < 2)
-		return (0);
-	buffer = malloc(sizeof(char) * (fs + 1));
-	if (!buffer)
-		return (0);
-	len = read(fdcr, buffer, fs);
-	buffer[fs] = 0;
-	if (len <= 0)
-		return (free(buffer), 0);
-	close(fdcr);
-	for (j = 0; j < fs; j++)
-		if (buffer[j] == '\n')
-		{
-			buffer[j] = 0;
-			bld_hst_lst(data, buffer + end, lcnt++);
-			end = j + 1;
-		}
-	if (end != j)
-		bld_hst_lst(data, buffer + end, lcnt++);
-	free(buffer);
-	data->histc = lcnt;
-	while (data->histc-- >= HIST_MAX)
-		dlt_nd_idx(&(data->hist), 0);
-	renum_hst(data);
-	return (data->histc);
-}
-
-/**
- * bld_hst_lst - Inits the history list
- * @data: Info struct
- * @buffer: Buffer to use
- * @lc: LineCount, histc
- * Return: (0) Always
- */
-
-int bld_hst_lst(info *data, char *buffer, int lc)
-{
-	llist *nd = NULL;
-
-	if (data->hist)
-		nd = data->hist;
-	add_nd_end(&nd, buffer, lc);
-	if (!data->hist)
-		data->hist = nd;
-	return (0);
+	return (data->hstc = j);
 }
