@@ -30,15 +30,13 @@ int _strcmp(const char *s1, const char *s2)
 {
 	unsigned char c1, c2;
 
-	do
-	{
+	do {
 		c1 = (unsigned char) *s1++;
 		c2 = (unsigned char) *s2++;
 		if (c1 == '\0')
-		return c1 - c2;
-	}
-	while (c1 == c2);
-	return c1 - c2;
+		return (c1 - c2);
+	} while (c1 == c2);
+	return (c1 - c2);
 }
 
 /**
@@ -46,6 +44,7 @@ int _strcmp(const char *s1, const char *s2)
  * each string
  * @s1: First string
  * @s2: Second string
+ * @n: Number of chars to compare
  * Return: Difference of *s1 - *s2
  */
 
@@ -67,11 +66,22 @@ int _strncmp(const char *s1, const char *s2, size_t n)
 
 
 /**
- * _strtok - Tokenizes strings according
- * to the values in delim
- * @str: String to tokenize
- * @delim: The delimiters to use
- * Return: Char pointer to the next
- * value that's not null and not in
- * delim
+ * _strcpy - Copies strings
+ * @dest: Destination string
+ * @src: Source string
+ * Return: String dest
  */
+
+char *_strcpy(char *dest, const char *src)
+{
+	int i;
+
+	if (!src || !dest)
+		exit(-1);
+
+	for (i = 0; *src; i++)
+	{
+		*(dest + i) = *src++;
+	}
+	return (dest);
+}
